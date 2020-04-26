@@ -1,0 +1,49 @@
+.word-card {
+    width: 19%;
+    height: 90px;
+    margin: 0.5%;
+    border: #282c34 solid 1px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 18px;
+    text-transform: uppercase;
+}
+
+.red-card {
+    background-color: lightcoral;
+    color: red;
+    font-weight: bold;
+}
+
+.blue-card {
+    background-color: royalblue;
+    color: blue;
+    font-weight: bold;
+}
+
+.tan-card {
+    background-color: moccasin;
+    color: tan;
+    font-weight: bold;
+}
+
+.black-card {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+}
+
+.red-card-flipped {
+    background-color: red;
+    color: red;
+}
+
+.blue-card-flipped {
+    background-color: blue;
+    color: blue;
+}
+
+.tan-card-flipped {
+    background-color: tan;
+    color: tan;
+}
