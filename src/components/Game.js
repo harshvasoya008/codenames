@@ -83,7 +83,7 @@ class Game extends Component {
     }
 
     createBoard = () => {
-        const newBoard = this.prepareBoard();
+        const newBoard = this.categorizeWords(this.props.words);
 
         // Sending board to all players
         PubSub.publish(
@@ -92,15 +92,6 @@ class Game extends Component {
             { board: newBoard },
             handlePublishError
         );
-    }
-
-    prepareBoard = () => {
-        let words = [];
-        for (let i = 0; i < TOTAL_CARDS; i += 1) {
-            words.push("word-" + i);
-        }
-
-        return this.categorizeWords(words);
     }
 
     categorizeWords = (words) => {

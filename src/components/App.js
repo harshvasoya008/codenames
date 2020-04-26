@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Game from './Game';
 import { PubSub, handlePublishError } from './PubSub';
 import { EVENT_JOIN, EVENT_START } from '../constants/events';
+import { wordList } from '../constants/words';
 
 const APP_NAME = "codenames";
 const SEPARATOR = ":::";
@@ -12,6 +13,7 @@ const TEAM_RED = "Red";
 const TEAM_BLUE = "Blue";
 
 const MIN_PLAYERS_REQUIRED = 2;
+const TOTAL_CARDS = 25;
 
 class App extends Component {
     constructor(props) {
@@ -26,6 +28,7 @@ class App extends Component {
         };
 
         this.lobbyChannel = null;
+        this.words = [];
         this.players = [];
         this.playerMap = null;
     }
@@ -70,6 +73,7 @@ class App extends Component {
         });
 
         this.subscribeToChannel(this.lobbyChannel);
+        this.words = _.shuffle(wordList).slice(0, TOTAL_CARDS);
     }
 
     onPressJoin = () => {
@@ -174,7 +178,8 @@ class App extends Component {
                     <Game gameChannel={this.lobbyChannel}
                         playerMap={this.playerMap}
                         myUuid={this.uuid}
-                        isRoomCreator={this.state.isRoomCreator} />
+                        isRoomCreator={this.state.isRoomCreator}
+                        words={this.words} />
                 }
             </div>
         );
