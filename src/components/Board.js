@@ -28,6 +28,7 @@ class Board extends Component {
             <Card
                 key={i}
                 data={this.props.cards[i]}
+                isSpyMaster={this.props.isSpyMaster}
                 onClick={() => this.props.onClick(i)}
             />
         );

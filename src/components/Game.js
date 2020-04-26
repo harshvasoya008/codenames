@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import Board from './Board';
 import { PubSub, handlePublishError } from './PubSub';
-import { EVENT_NEW_BOARD, EVENT_CARD_CLICK } from '../constants/events';
+import { EVENT_NEW_BOARD, EVENT_CARD_CLICK, EVENT_TURN_PASS } from '../constants/events';
 
 const TOTAL_CARDS = 25;
 const TEAM_RED = "Red";
@@ -30,11 +30,25 @@ class Game extends Component {
     }
 
     componentDidMount() {
-        this.setState({
-            teamRed: _.filter(Object.keys(this.props.playerMap), uuid => this.props.playerMap[uuid].team === TEAM_RED),
-            teamBlue: _.filter(Object.keys(this.props.playerMap), uuid => this.props.playerMap[uuid].team === TEAM_BLUE),
-        })
+        this.prepareTeams();
+        this.subscribeToChannel();
 
+        if (this.props.isRoomCreator) {
+            this.createBoard();
+        }
+    }
+
+    prepareTeams() {
+        const teamRed = _.filter(Object.keys(this.props.playerMap), uuid => this.props.playerMap[uuid].team === TEAM_RED);
+        const teamBlue = _.filter(Object.keys(this.props.playerMap), uuid => this.props.playerMap[uuid].team === TEAM_BLUE);
+        this.setState({
+            teamRed: teamRed,
+            teamBlue: teamBlue,
+            isSpyMaster: (this.props.myUuid === teamRed[0] || this.props.myUuid === teamBlue[0])
+        })
+    }
+
+    subscribeToChannel() {
         PubSub.subscribe(this.props.gameChannel, (msg) => {
             const eventType = msg['name'];
             const msgData = msg['data'];
@@ -61,11 +75,11 @@ class Game extends Component {
                     this.checkForWinner();
                 }
             }
-        });
 
-        if (this.props.isRoomCreator) {
-            this.createBoard();
-        }
+            else if (eventType === EVENT_TURN_PASS) {
+                this.setState({ turn: msgData.turn });
+            }
+        });
     }
 
     createBoard = () => {
@@ -120,7 +134,7 @@ class Game extends Component {
     handleCardClick(index) {
         let board = this.state.board;
         const currTurn = this.state.turn;
-        if (!board[index].isChosen && currTurn === this.myTeam) {
+        if (!board[index].isChosen && currTurn === this.myTeam && !this.state.isSpyMaster) {
             board[index].isChosen = true;
             this.setState({ board: board });
 
@@ -193,7 +207,19 @@ class Game extends Component {
         for (let index = 0; index < board.length; index++) {
             board[index].isChosen = true;
         }
-        this.setState({board: board, isGameOver: true});
+        this.setState({ board: board, isGameOver: true });
+    }
+
+    endTurn() {
+        const currTurn = this.state.turn;
+        const nextTurn = currTurn === TEAM_RED ? TEAM_BLUE : TEAM_RED;
+        this.setState({ turn: nextTurn });
+        PubSub.publish(
+            this.props.gameChannel,
+            EVENT_TURN_PASS,
+            { turn: nextTurn },
+            handlePublishError
+        );
     }
 
     render() {
@@ -212,8 +238,14 @@ class Game extends Component {
                         <div>Cards remaining (Red-Blue): {this.redCount}-{this.blueCount}</div>
                         {
                             !this.state.isGameOver
-                            ? <div>{this.state.turn}'s turn</div>
-                            : <div>{this.winner} won!</div>
+                                ? <div>
+                                    {this.state.turn}'s turn
+                                    <button disabled={this.state.turn !== this.myTeam}
+                                        onClick={() => this.endTurn()}>
+                                        End Turn
+                                    </button>
+                                </div>
+                                : <div>{this.winner} won!</div>
                         }
                     </div>
                 </div>
@@ -223,6 +255,7 @@ class Game extends Component {
                         <div>
                             <Board
                                 cards={this.state.board}
+                                isSpyMaster={this.state.isSpyMaster}
                                 onClick={index => this.handleCardClick(index)}
                             />
                         </div>
