@@ -5,6 +5,7 @@ import Game from './Game';
 import { PubSub, handlePublishError } from './PubSub';
 import { EVENT_JOIN, EVENT_START } from '../constants/events';
 import { wordList } from '../constants/words';
+import '../styles/App.css';
 
 const APP_NAME = "codenames";
 const SEPARATOR = ":::";
@@ -12,7 +13,7 @@ const SEPARATOR = ":::";
 const TEAM_RED = "Red";
 const TEAM_BLUE = "Blue";
 
-const MIN_PLAYERS_REQUIRED = 2;
+const MIN_PLAYERS_REQUIRED = 4;
 const TOTAL_CARDS = 25;
 
 class App extends Component {
@@ -135,44 +136,58 @@ class App extends Component {
     render() {
         return (
             <div>
-                <h1>Codenames</h1>
-
                 {
                     !this.state.isPlaying &&
-                    <div className="game">
-                        <div>
-                            <div>
-                                <span>Nickname: </span>
-                                <input onChange={this.handleNicknameInputChange} />
-                            </div>
-                            <div>
-                                <span>Room code: </span>
-                                <input onChange={this.handleRoomIdInputChange} />
-                            </div>
-                            <div className="button-container">
-                                <button
-                                    className="create-button "
-                                    disabled={this.state.isDisabled}
-                                    onClick={() => this.onPressCreate()}>
-                                    Create
-                                </button>
-                                <button
-                                    className="join-button"
-                                    onClick={() => this.onPressJoin()}>
-                                    Join
-                                </button>
-                                {
-                                    this.state.isRoomCreator && this.state.count >= MIN_PLAYERS_REQUIRED &&
-                                    <button onClick={() => this.onPressStartGame()}>
-                                        Start Game
-                                    </button>
-                                }
-                            </div>
-
+                    <div class="d-md-flex h-md-100 align-items-center">
+                        <div className="heading heading-left bg-primary-color">
+                            <i class="fas fa-code"></i>
+                            <h1>code</h1>
                         </div>
+                        <div className="heading heading-right">
+                            <h1>names</h1>
+                        </div>
+                        <div class="col-md-6 p-0 h-md-100 align-items-center" style={{ "background": "#ebeeef" }}>
+                            <div className="d-md-flex p-5">
+                                <div className="login-box shadow">
+                                    <div className="login-box-title">
+                                        <span>Welcome!</span>
+                                    </div>
+                                    <form className="mt-3 p-4">
+                                        <div class="form-group row">
+                                            <label for="inputNickname" class="col-4 col-form-label">Nickname</label>
+                                            <div class="col-8">
+                                                <input type="text" class="form-control" id="inputNickname" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="inputRoomId" class="col-4 col-form-label">Room name</label>
+                                            <div class="col-8">
+                                                <input type="text" class="form-control" id="inputRoomId" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col">
+                                                <button type="submit" class="rounded-pill btn btn-outline-dark btn-block">Create</button>
+                                            </div>
+                                            <div class="col">
+                                                <button type="submit" class="rounded-pill btn btn-outline-dark btn-block">Join</button>
+                                            </div>
+                                        </div>
+                                        {
+                                            this.state.isRoomCreator && this.state.count >= MIN_PLAYERS_REQUIRED &&
+                                            <div class="form-group row">
+                                                <div class="col">
+                                                    <button type="submit" class="rounded-pill btn btn-outline-success btn-block">Start Game!</button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 p-0 bg-primary-color h-md-100" />
                     </div>
                 }
-
                 {
                     this.state.isPlaying &&
                     <Game gameChannel={this.lobbyChannel}
