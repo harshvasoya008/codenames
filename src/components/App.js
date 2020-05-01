@@ -3,7 +3,7 @@ import shortid from 'shortid';
 import _ from 'lodash';
 import Game from './Game';
 import { PubSub, handlePublishError } from './PubSub';
-import { EVENT_JOIN, EVENT_START } from '../constants/events';
+import { EVENT_JOIN, EVENT_PLAYER_LIST, EVENT_START } from '../constants/events';
 import { wordList } from '../constants/words';
 import '../styles/App.css';
 
@@ -26,11 +26,16 @@ class App extends Component {
             isDisabled: false,
             isRoomCreator: false,
             count: 1,
+            players: [],
         };
+
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.onPressCreate = this.onPressCreate.bind(this);
+        this.onPressJoin = this.onPressJoin.bind(this);
+        this.onPressStartGame = this.onPressStartGame.bind(this);
 
         this.lobbyChannel = null;
         this.words = [];
-        this.players = [];
         this.playerMap = null;
     }
 
@@ -41,14 +46,26 @@ class App extends Component {
                 const msgData = msg['data'];
 
                 if (eventType === EVENT_JOIN && this.state.isRoomCreator) {
-                    console.log(msgData.name + " joined");
                     this.setState({
                         count: this.state.count + 1
                     });
-                    this.players.push({
-                        uuid: msgData.uuid,
-                        name: msgData.name,
+                    this.setState(prevState => {
+                        return {
+                            players: prevState.players.concat(msgData)
+                        };
                     });
+
+                    // Sending updated player list to everyone
+                    PubSub.publish(
+                        channelName,
+                        EVENT_PLAYER_LIST,
+                        { playerList: this.state.players },
+                        handlePublishError
+                    );
+                }
+
+                else if (eventType === EVENT_PLAYER_LIST) {
+                    this.setState({ players: msgData.playerList });
                 }
 
                 else if (eventType === EVENT_START) {
@@ -74,6 +91,7 @@ class App extends Component {
         });
 
         this.subscribeToChannel(this.lobbyChannel);
+        this.state.players.push({ uuid: this.uuid, name: this.state.name });
         this.words = _.shuffle(wordList).slice(0, TOTAL_CARDS);
     }
 
@@ -98,14 +116,9 @@ class App extends Component {
     }
 
     onPressStartGame = () => {
-        this.players.push({
-            uuid: this.uuid,
-            name: this.state.name,
-        });
-
         let teams = {}
         let teamFlag = true;
-        _.shuffle(this.players).forEach(p => {
+        _.shuffle(this.state.players).forEach(p => {
             p.team = (teamFlag ? TEAM_RED : TEAM_BLUE)
             teams[p.uuid] = p;
             teamFlag = !teamFlag;
@@ -121,16 +134,13 @@ class App extends Component {
         );
     }
 
-    handleNicknameInputChange = (e) => {
+    handleInputChange(e) {
+        const target = e.target;
+        const name = target.name;
+        const value = target.value;
         this.setState({
-            name: e.target.value
-        })
-    }
-
-    handleRoomIdInputChange = (e) => {
-        this.setState({
-            roomId: e.target.value
-        })
+            [name]: value
+        });
     }
 
     render() {
@@ -138,54 +148,83 @@ class App extends Component {
             <div>
                 {
                     !this.state.isPlaying &&
-                    <div class="d-md-flex h-md-100 align-items-center">
+                    <div className="d-md-flex h-md-100 align-items-center">
                         <div className="heading heading-left bg-primary-color">
-                            <i class="fas fa-code"></i>
                             <h1>code</h1>
                         </div>
                         <div className="heading heading-right">
                             <h1>names</h1>
                         </div>
-                        <div class="col-md-6 p-0 h-md-100 align-items-center" style={{ "background": "#ebeeef" }}>
-                            <div className="d-md-flex p-5">
-                                <div className="login-box shadow">
-                                    <div className="login-box-title">
+                        <div className="col-md-6 p-0 h-md-100 align-items-center" style={{ "background": "#ebeeef" }}>
+                            <div className="p-5">
+                                <div className="box login-box shadow">
+                                    <div className="box-title">
                                         <span>Welcome!</span>
                                     </div>
-                                    <form className="mt-3 p-4">
-                                        <div class="form-group row">
-                                            <label for="inputNickname" class="col-4 col-form-label">Nickname</label>
-                                            <div class="col-8">
-                                                <input type="text" class="form-control" id="inputNickname" />
+                                    <div className="mt-3 p-4">
+                                        <div className="form-group row">
+                                            <label className="col-4 col-form-label">Nickname</label>
+                                            <div className="col-8">
+                                                <input name="name" type="text" className="form-control" onChange={this.handleInputChange} />
                                             </div>
                                         </div>
-                                        <div class="form-group row">
-                                            <label for="inputRoomId" class="col-4 col-form-label">Room name</label>
-                                            <div class="col-8">
-                                                <input type="text" class="form-control" id="inputRoomId" />
+                                        <div className="form-group row">
+                                            <label className="col-4 col-form-label">Room name</label>
+                                            <div className="col-8">
+                                                <input name="roomId" type="text" className="form-control" onChange={this.handleInputChange} />
                                             </div>
                                         </div>
-                                        <div class="form-group row">
-                                            <div class="col">
-                                                <button type="submit" class="rounded-pill btn btn-outline-dark btn-block">Create</button>
+                                        <div className="form-group row">
+                                            <div className="col">
+                                                <button type="button" className="rounded-pill btn btn-outline-dark btn-block" onClick={this.onPressCreate}>
+                                                    Create
+                                                </button>
                                             </div>
-                                            <div class="col">
-                                                <button type="submit" class="rounded-pill btn btn-outline-dark btn-block">Join</button>
+                                            <div className="col">
+                                                <button type="button" className="rounded-pill btn btn-outline-dark btn-block" onClick={this.onPressJoin}>
+                                                    Join
+                                                </button>
                                             </div>
                                         </div>
                                         {
                                             this.state.isRoomCreator && this.state.count >= MIN_PLAYERS_REQUIRED &&
-                                            <div class="form-group row">
-                                                <div class="col">
-                                                    <button type="submit" class="rounded-pill btn btn-outline-success btn-block">Start Game!</button>
+                                            <div className="form-group row">
+                                                <div className="col">
+                                                    <button type="button" className="rounded-pill btn btn-outline-success btn-block" onClick={this.onPressStartGame}>
+                                                        Start Game!
+                                                    </button>
                                                 </div>
                                             </div>
                                         }
-                                    </form>
+                                    </div>
                                 </div>
+                                {
+                                    this.state.players.length > 0 &&
+                                    <div className="box players-box shadow mt-5">
+                                        <div className="box-title">
+                                            <span>Secret Operatives</span>
+                                        </div>
+                                        <div className="players-box-body p-3">
+                                            {
+                                                this.state.players.map((p, index) => {
+                                                    const leftPlayer = p.name;
+                                                    const rightPlayer = this.state.players[index + 1] ? this.state.players[index + 1].name : '';
+                                                    return (
+                                                        index % 2 === 0
+                                                            ? <div className="d-flex">
+                                                                <div className="w-50 text-center">{leftPlayer}</div>
+                                                                <div className="w-50 text-center">{rightPlayer}</div>
+                                                            </div>
+                                                            : ''
+                                                    );
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
-                        <div class="col-md-6 p-0 bg-primary-color h-md-100" />
+                        <div className="col-md-6 p-0 bg-primary-color h-md-100" />
                     </div>
                 }
                 {
