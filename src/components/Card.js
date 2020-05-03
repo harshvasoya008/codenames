@@ -7,7 +7,7 @@ const BLACK_ASSASSIN = "BLACK_ASSASSIN";
 
 const Card = props => {
     let cssClass = "card-dimension word-card text-center";
-    if (props.data.isChosen || props.isSpyMaster) {
+    if (props.data.isChosen) {
         switch (props.data.type) {
             case RED_AGENT:
                 cssClass += " red-card";

@@ -148,14 +148,14 @@ class App extends Component {
             <div>
                 {
                     !this.state.isPlaying &&
-                    <div className="d-md-flex h-md-100 align-items-center">
-                        <div className="heading heading-left bg-primary-color">
+                    <div className="d-md-flex full-height align-items-center">
+                        <div className="heading heading-left bg-split-ui-dark">
                             <h1>code</h1>
                         </div>
-                        <div className="heading heading-right">
+                        <div className="heading heading-right bg-split-ui-light">
                             <h1>names</h1>
                         </div>
-                        <div className="col-md-6 p-0 h-md-100 align-items-center" style={{ "background": "#ebeeef" }}>
+                        <div className="col-md-6 p-0 bg-split-ui-light full-height align-items-center">
                             <div className="p-5">
                                 <div className="box login-box shadow">
                                     <div className="box-title">
@@ -224,7 +224,7 @@ class App extends Component {
                                 }
                             </div>
                         </div>
-                        <div className="col-md-6 p-0 bg-primary-color h-md-100" />
+                        <div className="col-md-6 p-0 bg-split-ui-dark full-height" />
                     </div>
                 }
                 {

@@ -216,15 +216,15 @@ class Game extends Component {
 
     render() {
         return (
-            <div className="p-3 text-center">
+            <div className="p-3 text-center full-height">
                 <div className="row mx-0 mt-3 mb-4">
                     <div className="col-2"></div>
                     <div className="col-8">
                         <h4>Codenames</h4>
                     </div>
                     <div className="col-2 p-0">
-                        <button className="btn btn-outline-primary btn-sm">New Game</button>
-                        <button className="float-right btn btn-outline-danger btn-sm">Leave Game</button>
+                        <button className="btn btn-outline-primary btn-sm px-3">New Game</button>
+                        <button className="float-right btn btn-outline-danger btn-sm px-3">Leave Game</button>
                     </div>
                 </div>
                 <div className="mt-3">
@@ -232,19 +232,21 @@ class Game extends Component {
                         <div className="col-9">
                             <div className="row game-status mb-3">
                                 <div className="col-4 d-flex pl-0">
-                                    <div className="text-danger ml-3 mr-1">{this.redCount}</div>
+                                    <div className="red-agent ml-3 mr-1">{this.redCount}</div>
                                     <div>-</div>
-                                    <div className="text-info mx-1">{this.blueCount}</div>
+                                    <div className="blue-agent mx-1">{this.blueCount}</div>
                                 </div>
                                 <div className="col-4">
-                                    {
-                                        !this.state.isGameOver
-                                            ? <div className={this.state.turn === TEAM_RED ? 'text-danger' : 'text-info'}>{this.state.turn.toLowerCase()}'s turn</div>
-                                            : <div>{this.winner} won!</div>
-                                    }
+                                    <div className={this.state.turn === TEAM_RED ? 'red-agent' : 'blue-agent'}>
+                                        {
+                                            !this.state.isGameOver
+                                                ? this.state.turn.toLowerCase() + "'s turn"
+                                                : this.winner.toLowerCase() + "won!"
+                                        }
+                                    </div>
                                 </div>
                                 <div className="col-4 text-right align-top">
-                                    <button className="btn btn-outline-dark btn-sm px-3" style={{"marginRight":"0.5%"}}
+                                    <button className="btn btn-outline-dark btn-sm px-3" style={{ "marginRight": "0.5%" }}
                                         disabled={this.state.turn !== this.myTeam}
                                         onClick={() => this.endTurn()}>
                                         End Turn
@@ -264,6 +266,7 @@ class Game extends Component {
                             <Panel teamRed={this.state.teamRed}
                                 teamBlue={this.state.teamBlue}
                                 playerMap={this.props.playerMap}
+                                playerTeam={this.myTeam}
                                 cards={this.state.board}
                                 isSpyMaster={this.state.isSpyMaster} />
                         </div>

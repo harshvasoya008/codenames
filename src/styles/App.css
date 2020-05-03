@@ -1,17 +1,33 @@
-@media (min-width: 768px) {
-  .h-md-100 {height: 100vh;}
+:root {
+  --split-ui-color-light: #eef0f2;
+  --split-ui-color-dark: #20252d;
+  --split-ui-support-color: #00bfaa;
+  --center-box-border-radius: 0.8rem;
+
+  --red-color: #dc3545;
+  --blue-color: #007bff;
+  --tan-color: #d5c2a9;
+  --black-color: #000;
+  --white-color: #fff;
 }
 
-.bg-primary-color {
-  background-color: #10191e;
+@media (min-width: 768px) {
+  .full-height {min-height: 100vh;}
+}
+
+.bg-split-ui-light {
+  background-color: var(--split-ui-color-light);
+}
+
+.bg-split-ui-dark {
+  background-color: var(--split-ui-color-dark);
 }
 
 .heading {
   width: 160px;
   position: absolute;
   top: 40%;
-  border: solid 5px;
-  padding: 20px;
+  padding: 22px;
   z-index: 999;
 }
 
@@ -20,10 +36,9 @@
   padding-right: 12px;
   text-align: right;
   border-right: 0;
-  border-top-left-radius: 15px;
-  border-bottom-left-radius: 15px;
-  border-color: #10191e;
-  color: #ebeeef;
+  border-top-left-radius: var(--center-box-border-radius);
+  border-bottom-left-radius: var(--center-box-border-radius);
+  color: var(--split-ui-color-light);
 }
 
 .heading-right {
@@ -31,11 +46,9 @@
   padding-left: 12px;
   text-align: left;
   border-left: 0;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
-  border-color: #ebeeef;
-  color: #10191e;
-  background-color: #ebeeef;
+  border-top-right-radius: var(--center-box-border-radius);
+  border-bottom-right-radius: var(--center-box-border-radius);
+  color: var(--split-ui-color-dark);
 }
 
 .box {
@@ -50,7 +63,7 @@
 }
 
 .players-box {
-  width: 300px;
+  width: 370px;
 }
 
 .box-title {
@@ -65,11 +78,11 @@
   background-size: cover;
   background-position: center;
   padding: 25px 15px;
-  color: #ebeeef;
+  color: var(--split-ui-color-light);
   font-size: 25px;
   line-height: 1.2;
-  background: rgb(132,154,161);
-  background: linear-gradient(180deg, rgba(132,154,161,1) 0%, rgba(16,25,30,1) 59%); 
+  background: var(--split-ui-support-color);
+  background: linear-gradient(0deg, var(--split-ui-support-color) 0%, var(--split-ui-color-dark) 27%); 
 }
 
 .players-box-body {
@@ -105,7 +118,6 @@
 .word-card {
   padding-top: 2rem;
   padding-bottom: 2rem;
-  border: #282c34 solid 1px;
   border-radius: 5px;
   font-size: 16px;
   text-transform: uppercase;
@@ -116,42 +128,42 @@
 }
 
 .red-card {
-  background-color: lightcoral;
-  color: red;
+  background-color: var(--red-color);
+  color: var(--white-color);
   font-weight: bold;
 }
 
 .blue-card {
-  background-color: royalblue;
-  color: blue;
+  background-color: var(--blue-color);
+  color: var(--white-color);
   font-weight: bold;
 }
 
 .tan-card {
-  background-color: moccasin;
-  color: tan;
+  background-color: var(--tan-color);
+  color: var(--white-color);
   font-weight: bold;
 }
 
-.black-card {
-  background-color: black;
-  color: white;
+.black-card, .bg-black-assassin {
+  background-color: var(--black-color);
+  color: var(--white-color);
   font-weight: bold;
 }
 
-.red-card-flipped {
-  background-color: red;
-  color: red;
+.bg-red-agent {
+  background-color: var(--red-color);
+  color: var(--red-color);
 }
 
-.blue-card-flipped {
-  background-color: blue;
-  color: blue;
+.bg-blue-agent {
+  background-color: var(--blue-color);
+  color: var(--blue-color);
 }
 
-.tan-card-flipped {
-  background-color: tan;
-  color: tan;
+.bg-tan-bystander {
+  background-color: var(--tan-color);
+  color: var(--tan-color);
 }
 
 /* ----------- Panel styles ------------ */
@@ -166,29 +178,9 @@
 }
 
 .red-agent {
-  color: #dc3545;
+  color: var(--red-color);
 }
 
 .blue-agent {
-  color: #007bff;
-}
-
-.bg-red-agent {
-  background-color: #dc3545;
-  color: #dc3545;
-}
-
-.bg-blue-agent {
-  background-color: #007bff;
-  color: #007bff;
-}
-
-.bg-tan-bystander {
-  background-color: #d5c2a9;
-  color: #d5c2a9;
-}
-
-.bg-black-assassin {
-  background-color: black;
-  color: white;
+  color: var(--blue-color);
 }

@@ -31,7 +31,7 @@ class Panel extends Component {
             <div className="panel">
                 <div className="py-3">
                     <span className="role-label">Role: </span>
-                    <span className="role-value">{this.props.isSpyMaster ? SPYMASTER : FIELD_OPERATIVE}</span>
+                    <span className={this.props.playerTeam.toLowerCase() + "-agent role-value"}>{this.props.isSpyMaster ? SPYMASTER : FIELD_OPERATIVE}</span>
                 </div>
                 <div>
                     <ul class="nav nav-tabs nav-justified" id="panelTabs" role="tablist">
@@ -47,15 +47,17 @@ class Panel extends Component {
                             <div className="d-flex p-2">
                                 <div className="col-6 border-right p-2">
                                     {
-                                        this.props.teamRed.map(player => {
-                                            return (<div className="red-agent">{this.props.playerMap[player].name}</div>);
+                                        this.props.teamRed.map((player, index) => {
+                                            if (index === 0) return (<div className="red-agent">[{this.props.playerMap[player].name}]</div>);
+                                            else return (<div className="red-agent">{this.props.playerMap[player].name}</div>);
                                         })
                                     }
                                 </div>
                                 <div className="col-6 p-2">
                                     {
-                                        this.props.teamBlue.map(player => {
-                                            return (<div className="blue-agent">{this.props.playerMap[player].name}</div>);
+                                        this.props.teamBlue.map((player, index) => {
+                                            if(index === 0) return (<div className="blue-agent">[{this.props.playerMap[player].name}]</div>);
+                                            else return (<div className="blue-agent">{this.props.playerMap[player].name}</div>);
                                         })
                                     }
                                 </div>
