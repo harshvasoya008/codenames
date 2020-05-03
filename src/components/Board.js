@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Card from './Card';
-import '../styles/Board.css';
 
 class Board extends Component {
     constructor(props) {
@@ -13,11 +12,11 @@ class Board extends Component {
         let cellCounter = 0;
 
         for (let i = 0; i < row; i += 1) {
-            const columns = [];
+            const row = [];
             for (let j = 0; j < col; j += 1) {
-                columns.push(this.renderCard(cellCounter++));
+                row.push(this.renderCard(cellCounter++));
             }
-            board.push(<div key={i} className="board-row">{columns}</div>);
+            board.push(<div key={i} className="board-row d-flex">{row}</div>);
         }
 
         return board;
@@ -35,7 +34,7 @@ class Board extends Component {
     }
 
     render() {
-        return <div className="board">{this.createBoard(5, 5)}</div>;
+        return <div>{this.createBoard(5, 5)}</div>;
     }
 }
 

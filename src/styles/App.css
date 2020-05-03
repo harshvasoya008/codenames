@@ -77,3 +77,118 @@
   overflow-x: hidden;
   overflow-y: scroll;
 }
+
+/* ----------- Game styles ------------- */
+
+.game-status {
+  font-size: 1.9rem;
+}
+
+/* ----------- Board styles ------------ */
+
+.board {
+  width: 70%;
+  margin-left: 1.5%;
+}
+
+.board-row {
+  margin-left: -15px;
+}
+
+/* ----------- Card styles ------------- */
+
+.card-dimension {
+  width: 19%;
+  margin: 0.5%;
+}
+
+.word-card {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border: #282c34 solid 1px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.word-card:hover {
+  cursor: pointer;
+}
+
+.red-card {
+  background-color: lightcoral;
+  color: red;
+  font-weight: bold;
+}
+
+.blue-card {
+  background-color: royalblue;
+  color: blue;
+  font-weight: bold;
+}
+
+.tan-card {
+  background-color: moccasin;
+  color: tan;
+  font-weight: bold;
+}
+
+.black-card {
+  background-color: black;
+  color: white;
+  font-weight: bold;
+}
+
+.red-card-flipped {
+  background-color: red;
+  color: red;
+}
+
+.blue-card-flipped {
+  background-color: blue;
+  color: blue;
+}
+
+.tan-card-flipped {
+  background-color: tan;
+  color: tan;
+}
+
+/* ----------- Panel styles ------------ */
+.panel {
+  border: 1px solid black;
+  border-radius: 8px;
+}
+
+.role-value {
+  color: mediumseagreen;
+  font-size: 1.4rem;
+}
+
+.red-agent {
+  color: #dc3545;
+}
+
+.blue-agent {
+  color: #007bff;
+}
+
+.bg-red-agent {
+  background-color: #dc3545;
+  color: #dc3545;
+}
+
+.bg-blue-agent {
+  background-color: #007bff;
+  color: #007bff;
+}
+
+.bg-tan-bystander {
+  background-color: #d5c2a9;
+  color: #d5c2a9;
+}
+
+.bg-black-assassin {
+  background-color: black;
+  color: white;
+}

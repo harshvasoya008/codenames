@@ -3,6 +3,7 @@ import _ from 'lodash';
 import Board from './Board';
 import { PubSub, handlePublishError } from './PubSub';
 import { EVENT_NEW_BOARD, EVENT_CARD_CLICK, EVENT_TURN_PASS } from '../constants/events';
+import Panel from './Panel';
 
 const TOTAL_CARDS = 25;
 const TEAM_RED = "Red";
@@ -215,43 +216,59 @@ class Game extends Component {
 
     render() {
         return (
-            <div>
-                <div className="team-map">
-                    <div>
-                        <span>Team Red: </span>
-                        <span>{this.state.teamRed.map(player => this.props.playerMap[player].name).join(',')}</span>
+            <div className="p-3 text-center">
+                <div className="row mx-0 mt-3 mb-4">
+                    <div className="col-2"></div>
+                    <div className="col-8">
+                        <h4>Codenames</h4>
                     </div>
-                    <div>
-                        <span>Team Blue: </span>
-                        <span>{this.state.teamBlue.map(player => this.props.playerMap[player].name).join(',')}</span>
+                    <div className="col-2 p-0">
+                        <button className="btn btn-outline-primary btn-sm">New Game</button>
+                        <button className="float-right btn btn-outline-danger btn-sm">Leave Game</button>
                     </div>
-                    <div>
-                        <div>Cards remaining (Red-Blue): {this.redCount}-{this.blueCount}</div>
-                        {
-                            !this.state.isGameOver
-                                ? <div>
-                                    {this.state.turn}'s turn
-                                    <button disabled={this.state.turn !== this.myTeam}
+                </div>
+                <div className="mt-3">
+                    <div className="row m-0">
+                        <div className="col-9">
+                            <div className="row game-status mb-3">
+                                <div className="col-4 d-flex pl-0">
+                                    <div className="text-danger ml-3 mr-1">{this.redCount}</div>
+                                    <div>-</div>
+                                    <div className="text-info mx-1">{this.blueCount}</div>
+                                </div>
+                                <div className="col-4">
+                                    {
+                                        !this.state.isGameOver
+                                            ? <div className={this.state.turn === TEAM_RED ? 'text-danger' : 'text-info'}>{this.state.turn.toLowerCase()}'s turn</div>
+                                            : <div>{this.winner} won!</div>
+                                    }
+                                </div>
+                                <div className="col-4 text-right align-top">
+                                    <button className="btn btn-outline-dark btn-sm px-3" style={{"marginRight":"0.5%"}}
+                                        disabled={this.state.turn !== this.myTeam}
                                         onClick={() => this.endTurn()}>
                                         End Turn
                                     </button>
                                 </div>
-                                : <div>{this.winner} won!</div>
-                        }
-                    </div>
-                </div>
-                {
-                    this.state.board.length === TOTAL_CARDS &&
-                    <div className="game">
-                        <div>
-                            <Board
+                            </div>
+
+                            {
+                                this.state.board.length === TOTAL_CARDS &&
+                                <Board
+                                    cards={this.state.board}
+                                    isSpyMaster={this.state.isSpyMaster}
+                                    onClick={index => this.handleCardClick(index)} />
+                            }
+                        </div>
+                        <div className="col-3 pr-0">
+                            <Panel teamRed={this.state.teamRed}
+                                teamBlue={this.state.teamBlue}
+                                playerMap={this.props.playerMap}
                                 cards={this.state.board}
-                                isSpyMaster={this.state.isSpyMaster}
-                                onClick={index => this.handleCardClick(index)}
-                            />
+                                isSpyMaster={this.state.isSpyMaster} />
                         </div>
                     </div>
-                }
+                </div>
             </div>
         );
     }
