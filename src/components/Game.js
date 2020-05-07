@@ -218,7 +218,9 @@ class Game extends Component {
         return (
             <div className="p-3 text-center full-height">
                 <div className="row mx-0 mt-3 mb-4">
-                    <div className="col-2"></div>
+                    <div className="col-2 text-left">
+                        <h5>Hello, {this.props.playerMap[this.props.myUuid].name}!</h5>
+                    </div>
                     <div className="col-8">
                         <h4>Codenames</h4>
                     </div>
@@ -241,7 +243,7 @@ class Game extends Component {
                                         {
                                             !this.state.isGameOver
                                                 ? this.state.turn.toLowerCase() + "'s turn"
-                                                : this.winner.toLowerCase() + "won!"
+                                                : this.winner.toLowerCase() + " won!"
                                         }
                                     </div>
                                 </div>

@@ -13,6 +13,7 @@ const SEPARATOR = ":::";
 const TEAM_RED = "Red";
 const TEAM_BLUE = "Blue";
 
+const DEBUG = 0;
 const MIN_PLAYERS_REQUIRED = 4;
 const TOTAL_CARDS = 25;
 
@@ -37,6 +38,21 @@ class App extends Component {
         this.lobbyChannel = null;
         this.words = [];
         this.playerMap = null;
+    }
+
+    componentDidMount() {
+        if (DEBUG) {
+            this.words = _.shuffle(wordList).slice(0, TOTAL_CARDS);
+            this.uuid = "101";
+            this.playerMap = {
+                "101": {
+                    uuid: "101",
+                    name: "React",
+                    team: TEAM_RED
+                }
+            }
+            this.setState({isPlaying: true, isRoomCreator:true})
+        }
     }
 
     subscribeToChannel = (channelName) => {

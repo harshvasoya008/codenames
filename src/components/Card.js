@@ -24,7 +24,7 @@ const Card = props => {
             default:
                 break;
         }
-    } else if (!props.isChosen) {
+    } else if (!props.isChosen || props.data.type === BLACK_ASSASSIN) {
         cssClass += " shadow";
     }
 
