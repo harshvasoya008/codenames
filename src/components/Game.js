@@ -18,9 +18,9 @@ class Game extends Component {
         super(props);
         this.state = {
             board: [],
-            teamRed: [],
-            teamBlue: [],
             turn: 'Nobody',
+            isSpyMaster: false,
+            hasGameStarted: false,
             isGameOver: false
         }
 
@@ -28,25 +28,16 @@ class Game extends Component {
         this.redCount = 0;
         this.blueCount = 0;
         this.winner = null;
+
+        console.log("in");
     }
 
     componentDidMount() {
-        this.prepareTeams();
         this.subscribeToChannel();
 
         if (this.props.isRoomCreator) {
             this.createBoard();
         }
-    }
-
-    prepareTeams() {
-        const teamRed = _.filter(Object.keys(this.props.playerMap), uuid => this.props.playerMap[uuid].team === TEAM_RED);
-        const teamBlue = _.filter(Object.keys(this.props.playerMap), uuid => this.props.playerMap[uuid].team === TEAM_BLUE);
-        this.setState({
-            teamRed: teamRed,
-            teamBlue: teamBlue,
-            isSpyMaster: (this.props.myUuid === teamRed[0] || this.props.myUuid === teamBlue[0])
-        })
     }
 
     subscribeToChannel() {
@@ -257,7 +248,7 @@ class Game extends Component {
                             </div>
 
                             {
-                                this.state.board.length === TOTAL_CARDS &&
+                                this.state.hasGameStarted && this.state.board.length === TOTAL_CARDS &&
                                 <Board
                                     cards={this.state.board}
                                     isSpyMaster={this.state.isSpyMaster}
@@ -265,11 +256,9 @@ class Game extends Component {
                             }
                         </div>
                         <div className="col-3 pr-0">
-                            <Panel teamRed={this.state.teamRed}
-                                teamBlue={this.state.teamBlue}
+                            <Panel cards={this.state.board}
                                 playerMap={this.props.playerMap}
                                 playerTeam={this.myTeam}
-                                cards={this.state.board}
                                 isSpyMaster={this.state.isSpyMaster} />
                         </div>
                     </div>

@@ -3,7 +3,7 @@ import shortid from 'shortid';
 import _ from 'lodash';
 import Game from './Game';
 import { PubSub, handlePublishError } from './PubSub';
-import { EVENT_JOIN, EVENT_PLAYER_LIST, EVENT_START } from '../constants/events';
+import { EVENT_JOIN, EVENT_PLAYER_LIST } from '../constants/events';
 import { wordList } from '../constants/words';
 import '../styles/App.css';
 
@@ -14,7 +14,6 @@ const TEAM_RED = "Red";
 const TEAM_BLUE = "Blue";
 
 const DEBUG = 0;
-const MIN_PLAYERS_REQUIRED = 4;
 const TOTAL_CARDS = 25;
 
 class App extends Component {
@@ -23,21 +22,18 @@ class App extends Component {
 
         this.uuid = shortid.generate().substring(0, 6);
         this.state = {
-            isPlaying: false,
-            isDisabled: false,
             isRoomCreator: false,
-            count: 1,
-            players: [],
+            playerList: [],
+            playerMap: {},
         };
 
-        this.handleInputChange = this.handleInputChange.bind(this);
         this.onPressCreate = this.onPressCreate.bind(this);
         this.onPressJoin = this.onPressJoin.bind(this);
-        this.onPressStartGame = this.onPressStartGame.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
 
         this.lobbyChannel = null;
         this.words = [];
-        this.playerMap = null;
+        this.teamFlag = false;
     }
 
     componentDidMount() {
@@ -62,12 +58,10 @@ class App extends Component {
                 const msgData = msg['data'];
 
                 if (eventType === EVENT_JOIN && this.state.isRoomCreator) {
-                    this.setState({
-                        count: this.state.count + 1
-                    });
+                    msgData.team = this.assignTeam();
                     this.setState(prevState => {
                         return {
-                            players: prevState.players.concat(msgData)
+                            playerList: prevState.playerList.concat(msgData)
                         };
                     });
 
@@ -75,20 +69,14 @@ class App extends Component {
                     PubSub.publish(
                         channelName,
                         EVENT_PLAYER_LIST,
-                        { playerList: this.state.players },
+                        { playerList: this.state.playerList },
                         handlePublishError
                     );
                 }
 
                 else if (eventType === EVENT_PLAYER_LIST) {
-                    this.setState({ players: msgData.playerList });
-                }
-
-                else if (eventType === EVENT_START) {
-                    this.playerMap = msgData.teams;
-                    this.setState({
-                        isPlaying: true
-                    });
+                    const playerMap = this.generatePlayerMap(msgData.playerList);
+                    this.setState({ playerList: msgData.playerList, playerMap: playerMap });
                 }
             });
         }
@@ -102,13 +90,16 @@ class App extends Component {
 
         this.lobbyChannel = APP_NAME + SEPARATOR + this.state.roomId;
         this.setState({
-            isDisabled: true,
             isRoomCreator: true
         });
 
         this.subscribeToChannel(this.lobbyChannel);
-        this.state.players.push({ uuid: this.uuid, name: this.state.name });
         this.words = _.shuffle(wordList).slice(0, TOTAL_CARDS);
+
+        const team = this.assignTeam();
+        const playerList = [{ uuid: this.uuid, name: this.state.name, team: team }];
+        const playerMap = this.generatePlayerMap(playerList);
+        this.setState({ playerList: playerList, playerMap: playerMap });
     }
 
     onPressJoin = () => {
@@ -131,23 +122,15 @@ class App extends Component {
         this.subscribeToChannel(this.lobbyChannel);
     }
 
-    onPressStartGame = () => {
-        let teams = {}
-        let teamFlag = true;
-        _.shuffle(this.state.players).forEach(p => {
-            p.team = (teamFlag ? TEAM_RED : TEAM_BLUE)
-            teams[p.uuid] = p;
-            teamFlag = !teamFlag;
-        });
+    generatePlayerMap(playerList) {
+        let tempMap = {};
+        playerList.forEach(p => tempMap[p.uuid] = p);
+        return tempMap;
+    }
 
-        PubSub.publish(
-            this.lobbyChannel,
-            EVENT_START,
-            {
-                teams: teams
-            },
-            handlePublishError
-        );
+    assignTeam() {
+        this.teamFlag = !this.teamFlag;
+        return (this.teamFlag ? TEAM_RED : TEAM_BLUE);
     }
 
     handleInputChange(e) {
@@ -163,7 +146,7 @@ class App extends Component {
         return (
             <div>
                 {
-                    !this.state.isPlaying &&
+                    !this.state.playerList.length &&
                     <div className="d-md-flex full-height align-items-center">
                         <div className="heading heading-left bg-split-ui-dark">
                             <h1>code</h1>
@@ -202,51 +185,18 @@ class App extends Component {
                                                 </button>
                                             </div>
                                         </div>
-                                        {
-                                            this.state.isRoomCreator && this.state.count >= MIN_PLAYERS_REQUIRED &&
-                                            <div className="form-group row">
-                                                <div className="col">
-                                                    <button type="button" className="rounded-pill btn btn-outline-success btn-block" onClick={this.onPressStartGame}>
-                                                        Start Game!
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        }
                                     </div>
                                 </div>
-                                {
-                                    this.state.players.length > 0 &&
-                                    <div className="box players-box shadow mt-5">
-                                        <div className="box-title">
-                                            <span>Secret Operatives</span>
-                                        </div>
-                                        <div className="players-box-body p-3">
-                                            {
-                                                this.state.players.map((p, index) => {
-                                                    const leftPlayer = p.name;
-                                                    const rightPlayer = this.state.players[index + 1] ? this.state.players[index + 1].name : '';
-                                                    return (
-                                                        index % 2 === 0
-                                                            ? <div className="d-flex">
-                                                                <div className="w-50 text-center">{leftPlayer}</div>
-                                                                <div className="w-50 text-center">{rightPlayer}</div>
-                                                            </div>
-                                                            : ''
-                                                    );
-                                                })
-                                            }
-                                        </div>
-                                    </div>
-                                }
                             </div>
                         </div>
                         <div className="col-md-6 p-0 bg-split-ui-dark full-height" />
                     </div>
                 }
                 {
-                    this.state.isPlaying &&
+                    this.state.playerList.length &&
                     <Game gameChannel={this.lobbyChannel}
-                        playerMap={this.playerMap}
+                        playerMap={this.state.playerMap}
+                        playerList={this.state.playerList}
                         myUuid={this.uuid}
                         isRoomCreator={this.state.isRoomCreator}
                         words={this.words} />
