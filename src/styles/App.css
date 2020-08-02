@@ -151,6 +151,26 @@
   font-weight: bold;
 }
 
+.red-card-light {
+  background-color: rgb(241, 131, 123);
+  opacity: 0.85;
+  color: black;
+  font-weight: bold;
+}
+
+.blue-card-light {
+  background-color: rgb(149, 210, 248);
+  opacity: 0.85;
+  color: black;
+  font-weight: bold;
+}
+
+.tan-card-light {
+  background-color: whitesmoke;
+  color: black;
+  font-weight: bold;
+}
+
 .bg-red-agent {
   background-color: var(--red-color);
   color: var(--red-color);
